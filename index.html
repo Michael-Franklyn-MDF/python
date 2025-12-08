@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Generator</title>
+    <!-- Link to our CSS file -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Main container that holds everything -->
+    <div class="container">
+        <!-- Title section -->
+        <h1>🔐 Password Generator</h1>
+        <p class="subtitle">Create strong, secure passwords instantly</p>
+        
+        <!-- Password display area -->
+        <div class="password-display">
+            <input type="text" id="passwordOutput" readonly placeholder="Your password will appear here">
+            <button id="copyBtn" class="copy-btn">📋 Copy</button>
+        </div>
+        
+        <!-- Strength indicator -->
+        <div class="strength-meter">
+            <div class="strength-bar" id="strengthBar"></div>
+        </div>
+        <p class="strength-text" id="strengthText">Password strength: -</p>
+        
+        <!-- Settings section -->
+        <div class="settings">
+            <!-- Password length slider -->
+            <div class="setting-item">
+                <label for="lengthSlider">
+                    Password Length: <span id="lengthValue">16</span>
+                </label>
+                <input type="range" id="lengthSlider" min="8" max="32" value="16">
+            </div>
+            
+            <!-- Checkboxes for character types -->
+            <div class="setting-item">
+                <label>
+                    <input type="checkbox" id="uppercaseCheck" checked>
+                    Include Uppercase (A-Z)
+                </label>
+            </div>
+            
+            <div class="setting-item">
+                <label>
+                    <input type="checkbox" id="lowercaseCheck" checked>
+                    Include Lowercase (a-z)
+                </label>
+            </div>
+            
+            <div class="setting-item">
+                <label>
+                    <input type="checkbox" id="numbersCheck" checked>
+                    Include Numbers (0-9)
+                </label>
+            </div>
+            
+            <div class="setting-item">
+                <label>
+                    <input type="checkbox" id="symbolsCheck" checked>
+                    Include Symbols (!@#$%)
+                </label>
+            </div>
+            
+            <div class="setting-item">
+                <label>
+                    <input type="checkbox" id="excludeAmbiguous">
+                    Exclude Ambiguous (0, O, l, 1, I)
+                </label>
+            </div>
+        </div>
+        
+        <!-- Generate button -->
+        <button id="generateBtn" class="generate-btn">Generate Password</button>
+    </div>
+    
+    <!-- Link to our JavaScript file (at the end so HTML loads first) -->
+    <script src="script.js"></script>
+</body>
+</html>
