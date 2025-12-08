@@ -5,17 +5,72 @@
     box-sizing: border-box;
 }
 
+/* CSS Variables for Light Mode (default) */
+:root {
+    --bg-gradient-1: #0f2b23;
+    --bg-gradient-2: #1b3a30;
+    --bg-radial-1: rgba(255, 255, 255, 0.08);
+    --bg-radial-2: rgba(255, 255, 255, 0.05);
+    
+    --container-bg: #f6f1e9;
+    --container-border: rgba(12, 46, 35, 0.18);
+    
+    --text-primary: #0f2b23;
+    --text-secondary: #4f5b55;
+    --text-tertiary: #2f3d36;
+    
+    --accent-primary: #c2a15a;
+    --accent-secondary: #a4833a;
+    
+    --input-bg: #fffdf8;
+    --input-border: rgba(12, 46, 35, 0.25);
+    --input-focus: #c2a15a;
+    
+    --button-bg-start: #c2a15a;
+    --button-bg-end: #a4833a;
+    
+    --shadow-color: rgba(0, 0, 0, 0.28);
+}
+
+/* CSS Variables for Dark Mode */
+body.dark-mode {
+    --bg-gradient-1: #1a1a1a;
+    --bg-gradient-2: #2d2d2d;
+    --bg-radial-1: rgba(255, 255, 255, 0.03);
+    --bg-radial-2: rgba(255, 255, 255, 0.02);
+    
+    --container-bg: #1e1e1e;
+    --container-border: rgba(246, 241, 233, 0.1);
+    
+    --text-primary: #e8e8e8;
+    --text-secondary: #b0b0b0;
+    --text-tertiary: #c0c0c0;
+    
+    --accent-primary: #d4af6a;
+    --accent-secondary: #b89850;
+    
+    --input-bg: #2a2a2a;
+    --input-border: rgba(246, 241, 233, 0.15);
+    --input-focus: #d4af6a;
+    
+    --button-bg-start: #d4af6a;
+    --button-bg-end: #b89850;
+    
+    --shadow-color: rgba(0, 0, 0, 0.5);
+}
+
 body {
     font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
-    background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.08), transparent 35%), 
-                radial-gradient(circle at 80% 0%, rgba(255, 255, 255, 0.05), transparent 30%),
-                linear-gradient(135deg, #0f2b23, #1b3a30 45%, #0f2b23);
+    background: radial-gradient(circle at 20% 20%, var(--bg-radial-1), transparent 35%), 
+                radial-gradient(circle at 80% 0%, var(--bg-radial-2), transparent 30%),
+                linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2) 45%, var(--bg-gradient-1));
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 24px;
-    color: #13251e;
+    color: var(--text-primary);
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
 /* Main container styling */
