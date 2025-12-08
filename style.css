@@ -216,10 +216,11 @@ h1 {
 
 .setting-item label {
     display: block;
-    color: #2f3d36;
+    color: var(--text-tertiary);
     font-size: 14px;
     margin-bottom: 8px;
     font-weight: 600;
+    transition: color 0.3s ease;
 }
 
 #lengthValue {
