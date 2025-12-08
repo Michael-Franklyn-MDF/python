@@ -4,10 +4,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get references to all the HTML elements we need to work with
     const lengthSlider = document.getElementById('lengthSlider');
     const lengthValue = document.getElementById('lengthValue');
-    const uppercaseCheckbox = document.getElementById('uppercase');
-    const lowercaseCheckbox = document.getElementById('lowercase');
-    const numbersCheckbox = document.getElementById('numbers');
-    const symbolsCheckbox = document.getElementById('symbols');
+    const uppercaseCheckbox = document.getElementById('uppercaseCheck');
+    const lowercaseCheckbox = document.getElementById('lowercaseCheck');
+    const numbersCheckbox = document.getElementById('numbersCheck');
+    const symbolsCheckbox = document.getElementById('symbolsCheck');
     const excludeAmbiguousCheckbox = document.getElementById('excludeAmbiguous');
     const generateBtn = document.getElementById('generateBtn');
     const copyBtn = document.getElementById('copyBtn');
@@ -52,50 +52,49 @@ document.addEventListener('DOMContentLoaded', function() {
         const useSymbols = symbolsCheckbox.checked;
         const excludeAmbiguous = excludeAmbiguousCheckbox.checked;
 
-        // Build the character pool based on selected options
-        let characters = '';
-        
-        if (useUppercase) {
-            characters += UPPERCASE;
-        }
-        if (useLowercase) {
-            characters += LOWERCASE;
-        }
-        if (useNumbers) {
-            characters += NUMBERS;
-        }
-        if (useSymbols) {
-            characters += SYMBOLS;
-        }
-
-        // Remove ambiguous characters if option is selected
-        if (excludeAmbiguous) {
-            for (let char of AMBIGUOUS) {
-                characters = characters.replace(new RegExp(char, 'g'), '');
-            }
-        }
-
         // Check if at least one option is selected
-        if (characters.length === 0) {
+        if (!useUppercase && !useLowercase && !useNumbers && !useSymbols) {
             passwordOutput.value = 'Please select at least one option!';
             resetStrengthIndicator();
             return;
         }
 
-        // Generate the password by randomly selecting characters
-        let password = '';
-        for (let i = 0; i < length; i++) {
-            // Get a random index from 0 to characters.length - 1
-            const randomIndex = Math.floor(Math.random() * characters.length);
-            // Add the character at that random index to our password
-            password += characters[randomIndex];
-        }
+        // Call backend API to generate password
+        generateBtn.disabled = true;
+        generateBtn.textContent = 'Generating...';
 
-        // Display the generated password
-        passwordOutput.value = password;
-
-        // Calculate and display password strength
-        calculateStrength(password, useUppercase, useLowercase, useNumbers, useSymbols);
+        fetch('/api/generate-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                length,
+                useUppercase,
+                useLowercase,
+                useNumbers,
+                useSymbols,
+                excludeAmbiguous
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to generate password');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const password = data.password || '';
+            passwordOutput.value = password;
+            calculateStrength(password, useUppercase, useLowercase, useNumbers, useSymbols);
+        })
+        .catch(error => {
+            console.error(error);
+            passwordOutput.value = 'Error generating password';
+            resetStrengthIndicator();
+        })
+        .finally(() => {
+            generateBtn.disabled = false;
+            generateBtn.textContent = 'Generate Password';
+        });
     }
 
     /**
