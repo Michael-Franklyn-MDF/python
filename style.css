@@ -133,16 +133,16 @@ h1 {
 
 .copy-btn {
     padding: 14px 18px;
-    background: linear-gradient(135deg, #c2a15a, #a4833a);
-    color: #0f2b23;
-    border: 1px solid rgba(12, 46, 35, 0.22);
+    background: linear-gradient(135deg, var(--button-bg-start), var(--button-bg-end));
+    color: var(--text-primary);
+    border: 1px solid var(--container-border);
     border-radius: 12px;
     cursor: pointer;
     font-size: 14px;
     font-weight: 700;
     letter-spacing: 0.5px;
     transition: all 0.25s ease;
-    box-shadow: 0 8px 18px rgba(12, 46, 35, 0.15);
+    box-shadow: 0 8px 18px var(--shadow-color);
 }
 
 .copy-btn:hover {
