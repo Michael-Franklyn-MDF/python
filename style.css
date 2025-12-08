@@ -346,7 +346,7 @@ input[type="range"]::-moz-range-thumb {
     height: 50px;
     background: var(--accent-primary);
     border: 2px solid var(--container-border);
-    border-radius: 50%;
+    border-radius: 25%;
     cursor: pointer;
     display: flex;
     align-items: center;
