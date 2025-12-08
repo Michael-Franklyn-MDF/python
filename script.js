@@ -1,8 +1,50 @@
 // Wait for the HTML page to fully load before running our code
 document.addEventListener('DOMContentLoaded', function() {
-    
-    // Get references to all the HTML elements we need to work with
-    const lengthSlider = document.getElementById('lengthSlider');
+        // ========== DARK MODE FUNCTIONALITY - START ==========
+        
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const body = document.body;
+        
+        // Load saved theme from localStorage on page load
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            
+            if (savedTheme === 'dark') {
+                body.classList.add('dark-mode');
+                themeIcon.textContent = '☀️';
+            } else {
+                body.classList.remove('dark-mode');
+                themeIcon.textContent = '🌙';
+            }
+        }
+        
+        // Toggle between light and dark mode
+        function toggleTheme() {
+            body.classList.toggle('dark-mode');
+            
+            // Update icon and save preference
+            if (body.classList.contains('dark-mode')) {
+                themeIcon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeIcon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+        
+        // Add click event to toggle button
+        themeToggle.addEventListener('click', toggleTheme);
+        
+        // Load theme when page first loads
+        loadTheme();
+        
+        // ========== DARK MODE FUNCTIONALITY - END ==========
+        
+        // Get references to all the HTML elements we need to work with
+        const lengthSlider = document.getElementById('lengthSlider');
+        // ... rest of your existing code continues here
+
     const lengthValue = document.getElementById('lengthValue');
     const uppercaseCheckbox = document.getElementById('uppercaseCheck');
     const lowercaseCheckbox = document.getElementById('lowercaseCheck');
