@@ -80,8 +80,20 @@
         
         <!-- Generate button -->
         <button id="generateBtn" class="generate-btn">Generate Password</button>
+         <!-- PASSWORD HISTORY SECTION - NEW -->
+        <div class="history-section">
+            <div class="history-header">
+                <h3>📜 Password History</h3>
+                <button id="clearHistoryBtn" class="clear-history-btn">Clear All</button>
+            </div>
+            
+            <div id="historyContainer" class="history-container">
+                <p class="history-empty">No passwords generated yet. Generate your first password!</p>
+            </div>
+        </div>
+        
     </div>
-    
+
     <!-- Link to our JavaScript file (at the end so HTML loads first) -->
     <script src="script.js"></script>
 </body>
