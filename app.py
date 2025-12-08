@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory  # pyright: ignore[reportMissingImports]
 import random
 import string
 import os
