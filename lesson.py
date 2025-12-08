@@ -120,8 +120,8 @@
 # for num in c:
 #     print(num)
 
-students = ["Mike", "John", "Sarah"]
+# students = ["Mike", "John", "Sarah"]
 
-students.clear()
+# students.clear()
 
-print(students)
+# print(students)
