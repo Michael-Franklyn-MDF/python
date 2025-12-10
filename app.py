@@ -34,11 +34,11 @@ WORD_LIST = [
     
     # Food
     'pizza', 'coffee', 'apple', 'bread', 'honey', 'berry', 'mango', 'lemon',
-    'cherry', 'peach', 'grape', 'melon', 'banana', 'orange', 'coconut',
+    'cherry', 'peach', 'grape', 'melon', 'banana', 'coconut',
     
     # Tech/Modern
     'cyber', 'digital', 'quantum', 'neural', 'binary', 'data', 'pixel', 'byte',
-    'code', 'cloud', 'network', 'signal', 'pulse', 'matrix', 'nexus', 'core',
+    'code', 'network', 'signal', 'pulse', 'matrix', 'nexus', 'core',
     
     # Abstract/Misc
     'magic', 'shadow', 'light', 'star', 'moon', 'sun', 'time', 'space', 'future',
@@ -54,12 +54,12 @@ WORD_LIST = [
     'spark', 'blaze', 'steam', 'smoke', 'mist', 'fog', 'dew', 'ash',
     
     # Celestial
-    'comet', 'meteor', 'planet', 'galaxy', 'nebula', 'cosmos', 'stellar', 'lunar',
-    'solar', 'astral', 'orbit', 'eclipse', 'aurora', 'zenith', 'nova',
+    'comet', 'meteor', 'planet', 'galaxy', 'nebula', 'stellar', 'lunar',
+    'solar', 'astral', 'orbit', 'eclipse', 'aurora', 'nova',
     
     # Emotions/States
     'joy', 'peace', 'hope', 'faith', 'truth', 'trust', 'courage', 'honor',
-    'grace', 'charm', 'valor', 'pride', 'glory', 'victory', 'triumph'
+    'grace', 'charm', 'valor', 'pride', 'victory', 'triumph'
 ]
 # ========== WORD LIST FOR PASSPHRASE GENERATION - END ==========
 
@@ -84,7 +84,8 @@ def build_character_pool(use_uppercase, use_lowercase, use_numbers, use_symbols,
 
     return characters
 
-    # ========== PASSPHRASE HELPER FUNCTION - START ==========
+
+# ========== PASSPHRASE HELPER FUNCTION - START ==========
 def apply_capitalization(words, capitalize_mode):
     """
     Apply capitalization to a list of words.
@@ -135,7 +136,8 @@ def generate_password():
     password = "".join(random.choice(characters) for _ in range(length))
     return jsonify({"password": password})
 
-    # ========== NEW PASSPHRASE ENDPOINT - START ==========
+
+# ========== NEW PASSPHRASE ENDPOINT - START ==========
 @app.route("/api/generate-passphrase", methods=["POST"])
 def generate_passphrase():
     """
