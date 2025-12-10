@@ -379,6 +379,199 @@ input[type="range"]::-moz-range-thumb {
     transition: background 0.3s ease, border 0.3s ease;
 }
 
+/* ========== PASSWORD HISTORY STYLES - START ========== */
+
+.history-section {
+    margin-top: 32px;
+    padding-top: 28px;
+    border-top: 2px solid var(--input-border);
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.history-header h3 {
+    color: var(--text-primary);
+    font-size: 18px;
+    letter-spacing: 0.3px;
+    margin: 0;
+}
+
+.clear-history-btn {
+    padding: 8px 16px;
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.25s ease;
+}
+
+.clear-history-btn:hover {
+    background: rgba(183, 92, 75, 0.1);
+    color: #b75c4b;
+    border-color: #b75c4b;
+}
+
+.history-container {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+/* Custom scrollbar for history */
+.history-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.history-container::-webkit-scrollbar-track {
+    background: var(--input-bg);
+    border-radius: 10px;
+}
+
+.history-container::-webkit-scrollbar-thumb {
+    background: var(--accent-primary);
+    border-radius: 10px;
+}
+
+.history-container::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-secondary);
+}
+
+/* Empty state message */
+.history-empty {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 14px;
+    padding: 30px 20px;
+    font-style: italic;
+}
+
+/* Individual history item */
+.history-item {
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.25s ease;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.history-item:hover {
+    border-color: var(--accent-primary);
+    box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+/* Password text in history */
+.history-password {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0; /* Allows text to truncate properly */
+}
+
+.history-password-text {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 15px;
+    color: var(--text-primary);
+    letter-spacing: 1px;
+    word-break: break-all;
+}
+
+.history-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.history-timestamp {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.history-length {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Strength indicator in history */
+.history-strength {
+    font-size: 18px;
+    line-height: 1;
+}
+
+/* Action buttons in history */
+.history-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.history-copy-btn,
+.history-delete-btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.history-copy-btn {
+    background: var(--accent-primary);
+    color: var(--text-primary);
+}
+
+.history-copy-btn:hover {
+    background: var(--accent-secondary);
+    transform: translateY(-2px);
+}
+
+.history-copy-btn.copied {
+    background: #5b8a6e;
+    color: white;
+}
+
+.history-delete-btn {
+    background: rgba(183, 92, 75, 0.1);
+    color: #b75c4b;
+}
+
+.history-delete-btn:hover {
+    background: #b75c4b;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* ========== PASSWORD HISTORY STYLES - END ========== */
+
+
 /* Responsive design for smaller screens */
 @media (max-width: 600px) {
     .container {
