@@ -10,14 +10,25 @@
 <body>
     <!-- Main container that holds everything -->
     <div class="container">
-            <!-- Dark Mode Toggle Button - NEW -->
-            <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
-                <span id="themeIcon">🌙</span>
-            </button>
-            <br>
+        <!-- Dark Mode Toggle Button -->
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+            <span id="themeIcon">🌙</span>
+        </button>
+        
         <!-- Title section -->
         <h1>🔐 Password Generator</h1>
         <p class="subtitle">Create strong, secure passwords instantly</p>
+        
+        <!-- ========== NEW: TAB NAVIGATION ========== -->
+        <div class="mode-tabs">
+            <button class="tab-btn active" id="randomTab" data-mode="random">
+                🔠 Random
+            </button>
+            <button class="tab-btn" id="passphraseTab" data-mode="passphrase">
+                🔤 Passphrase
+            </button>
+        </div>
+        <!-- ========== END TAB NAVIGATION ========== -->
         
         <!-- Password display area -->
         <div class="password-display">
@@ -31,8 +42,8 @@
         </div>
         <p class="strength-text" id="strengthText">Password strength: -</p>
         
-        <!-- Settings section -->
-        <div class="settings">
+        <!-- ========== RANDOM PASSWORD SETTINGS (existing) ========== -->
+        <div class="settings" id="randomSettings">
             <!-- Password length slider -->
             <div class="setting-item">
                 <label for="lengthSlider">
@@ -77,15 +88,89 @@
                 </label>
             </div>
         </div>
-        <br>
+        
+        <!-- ========== NEW: PASSPHRASE SETTINGS ========== -->
+        <div class="settings" id="passphraseSettings" style="display: none;">
+            
+            <!-- Word count slider -->
+            <div class="setting-item">
+                <label for="wordCountSlider">
+                    Number of Words: <span id="wordCountValue">4</span>
+                </label>
+                <input type="range" id="wordCountSlider" min="3" max="6" value="4">
+            </div>
+            
+            <!-- Separator options -->
+            <div class="setting-item">
+                <label class="setting-label">Separator:</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="separator" value="-" checked>
+                        <span>Hyphen (-)</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="separator" value="_">
+                        <span>Underscore (_)</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="separator" value=" ">
+                        <span>Space ( )</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="separator" value="">
+                        <span>None</span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Additional options -->
+            <div class="setting-item">
+                <label>
+                    <input type="checkbox" id="passphraseNumbers" checked>
+                    Add Numbers (1-99)
+                </label>
+            </div>
+            
+            <div class="setting-item">
+                <label>
+                    <input type="checkbox" id="passphraseSymbols" checked>
+                    Add Symbols (!@#$%)
+                </label>
+            </div>
+            
+            <!-- Capitalization options -->
+            <div class="setting-item">
+                <label class="setting-label">Capitalization:</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="capitalize" value="title" checked>
+                        <span>Title Case</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="capitalize" value="lower">
+                        <span>lowercase</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="capitalize" value="upper">
+                        <span>UPPERCASE</span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Example display -->
+            <div class="passphrase-example">
+                <strong>Example:</strong> <span id="exampleText">Purple-Dragon-Mountain-Ocean-42!</span>
+            </div>
+        </div>
+        <!-- ========== END PASSPHRASE SETTINGS ========== -->
+        
         <!-- Generate button -->
         <button id="generateBtn" class="generate-btn">Generate Password</button>
-        <br>
-         <!-- PASSWORD HISTORY SECTION - NEW -->
+        
+        <!-- PASSWORD HISTORY SECTION -->
         <div class="history-section">
             <div class="history-header">
                 <h3>📜 Password History</h3>
-                <br>
                 <button id="clearHistoryBtn" class="clear-history-btn">Clear All</button>
             </div>
             
