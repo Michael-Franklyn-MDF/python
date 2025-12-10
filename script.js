@@ -40,22 +40,239 @@ document.addEventListener('DOMContentLoaded', function() {
         loadTheme();
         
         // ========== DARK MODE FUNCTIONALITY - END ==========
-        
-        // Get references to all the HTML elements we need to work with
-        const lengthSlider = document.getElementById('lengthSlider');
-        // ... rest of your existing code continues here
 
-    const lengthValue = document.getElementById('lengthValue');
-    const uppercaseCheckbox = document.getElementById('uppercaseCheck');
-    const lowercaseCheckbox = document.getElementById('lowercaseCheck');
-    const numbersCheckbox = document.getElementById('numbersCheck');
-    const symbolsCheckbox = document.getElementById('symbolsCheck');
-    const excludeAmbiguousCheckbox = document.getElementById('excludeAmbiguous');
-    const generateBtn = document.getElementById('generateBtn');
-    const copyBtn = document.getElementById('copyBtn');
-    const passwordOutput = document.getElementById('passwordOutput');
-    const strengthBar = document.getElementById('strengthBar');
-    const strengthText = document.getElementById('strengthText');
+        // Load theme when page first loads
+    loadTheme();
+    
+    // ========== DARK MODE FUNCTIONALITY - END ==========
+    
+    // ========== PASSWORD HISTORY FUNCTIONALITY - START ==========
+    
+    const historyContainer = document.getElementById('historyContainer');
+    const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+    const MAX_HISTORY_ITEMS = 10; // Store up to 10 passwords
+    
+    /**
+     * Load password history from localStorage
+     * @returns {Array} Array of password history objects
+     */
+    function loadHistory() {
+        try {
+            const history = localStorage.getItem('passwordHistory');
+            return history ? JSON.parse(history) : [];
+        } catch (error) {
+            console.error('Error loading history:', error);
+            return [];
+        }
+    }
+    
+    /**
+     * Save password history to localStorage
+     * @param {Array} history - Array of password objects to save
+     */
+    function saveHistory(history) {
+        try {
+            localStorage.setItem('passwordHistory', JSON.stringify(history));
+        } catch (error) {
+            console.error('Error saving history:', error);
+            // Handle quota exceeded error
+            if (error.name === 'QuotaExceededError') {
+                alert('Storage limit reached. Clearing old passwords...');
+                // Keep only the last 5 items
+                const trimmedHistory = history.slice(0, 5);
+                localStorage.setItem('passwordHistory', JSON.stringify(trimmedHistory));
+            }
+        }
+    }
+    
+    /**
+     * Add a new password to history
+     * @param {string} password - The generated password
+     * @param {number} length - Password length
+     * @param {string} strength - Password strength (weak, medium, strong)
+     */
+    function addToHistory(password, length, strength) {
+        const history = loadHistory();
+        
+        // Create new history item
+        const historyItem = {
+            id: Date.now(), // Unique ID using timestamp
+            password: password,
+            timestamp: new Date().toISOString(),
+            length: length,
+            strength: strength
+        };
+        
+        // Add to beginning of array (newest first)
+        history.unshift(historyItem);
+        
+        // Keep only MAX_HISTORY_ITEMS
+        if (history.length > MAX_HISTORY_ITEMS) {
+            history.pop(); // Remove oldest item
+        }
+        
+        // Save and update display
+        saveHistory(history);
+        displayHistory();
+    }
+    
+    /**
+     * Format timestamp to readable format (e.g., "2 mins ago")
+     * @param {string} timestamp - ISO timestamp string
+     * @returns {string} Formatted time difference
+     */
+    function formatTimestamp(timestamp) {
+        const now = new Date();
+        const past = new Date(timestamp);
+        const diffMs = now - past;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+        
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins} min${diffMins > 1 ? 's' : ''} ago`;
+        if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+        return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+    }
+    
+    /**
+     * Get strength emoji based on strength level
+     * @param {string} strength - Strength level (weak, medium, strong)
+     * @returns {string} Emoji representing strength
+     */
+    function getStrengthEmoji(strength) {
+        switch(strength) {
+            case 'weak': return '🔴';
+            case 'medium': return '🟡';
+            case 'strong': return '🟢';
+            default: return '⚪';
+        }
+    }
+    
+    /**
+     * Display password history in the UI
+     */
+    function displayHistory() {
+        const history = loadHistory();
+        
+        // Clear container
+        historyContainer.innerHTML = '';
+        
+        // Show empty state if no history
+        if (history.length === 0) {
+            historyContainer.innerHTML = '<p class="history-empty">No passwords generated yet. Generate your first password!</p>';
+            return;
+        }
+        
+        // Create history items
+        history.forEach(item => {
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            historyItem.dataset.id = item.id;
+            
+            historyItem.innerHTML = `
+                <div class="history-password">
+                    <div class="history-password-text">${item.password}</div>
+                    <div class="history-meta">
+                        <span class="history-timestamp">🕐 ${formatTimestamp(item.timestamp)}</span>
+                        <span class="history-length">📏 ${item.length} chars</span>
+                    </div>
+                </div>
+                <span class="history-strength" title="Strength: ${item.strength}">${getStrengthEmoji(item.strength)}</span>
+                <div class="history-actions">
+                    <button class="history-copy-btn" data-password="${item.password}">📋 Copy</button>
+                    <button class="history-delete-btn" data-id="${item.id}">🗑️</button>
+                </div>
+            `;
+            
+            historyContainer.appendChild(historyItem);
+        });
+        
+        // Add event listeners to copy buttons
+        document.querySelectorAll('.history-copy-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const password = this.dataset.password;
+                copyPasswordFromHistory(password, this);
+            });
+        });
+        
+        // Add event listeners to delete buttons
+        document.querySelectorAll('.history-delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = parseInt(this.dataset.id);
+                deleteHistoryItem(id);
+            });
+        });
+    }
+    
+    /**
+     * Copy password from history to clipboard
+     * @param {string} password - Password to copy
+     * @param {HTMLElement} button - The button element that was clicked
+     */
+    function copyPasswordFromHistory(password, button) {
+        navigator.clipboard.writeText(password).then(function() {
+            // Visual feedback
+            const originalText = button.textContent;
+            button.textContent = '✓ Copied!';
+            button.classList.add('copied');
+            
+            // Reset after 2 seconds
+            setTimeout(function() {
+                button.textContent = originalText;
+                button.classList.remove('copied');
+            }, 2000);
+        }).catch(function(err) {
+            console.error('Failed to copy:', err);
+            alert('Failed to copy password');
+        });
+    }
+    
+    /**
+     * Delete a single history item
+     * @param {number} id - ID of the item to delete
+     */
+    function deleteHistoryItem(id) {
+        let history = loadHistory();
+        history = history.filter(item => item.id !== id);
+        saveHistory(history);
+        displayHistory();
+    }
+    
+    /**
+     * Clear all history
+     */
+    function clearAllHistory() {
+        if (confirm('Are you sure you want to clear all password history?')) {
+            localStorage.removeItem('passwordHistory');
+            displayHistory();
+        }
+    }
+    
+    // Event listener for clear all button
+    clearHistoryBtn.addEventListener('click', clearAllHistory);
+    
+    // Display history on page load
+    displayHistory();
+    
+    // ========== PASSWORD HISTORY FUNCTIONALITY - END ==========
+    
+    // Get references to all the HTML elements we need to work with
+    const lengthSlider = document.getElementById('lengthSlider');
+    // ... rest of your existing code continues here
+    
+        // Get references to HTML elements
+        const lengthValue = document.getElementById('lengthValue');
+        const uppercaseCheckbox = document.getElementById('uppercaseCheck');
+        const lowercaseCheckbox = document.getElementById('lowercaseCheck');
+        const numbersCheckbox = document.getElementById('numbersCheck');
+        const symbolsCheckbox = document.getElementById('symbolsCheck');
+        const excludeAmbiguousCheckbox = document.getElementById('excludeAmbiguous');
+        const generateBtn = document.getElementById('generateBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const passwordOutput = document.getElementById('passwordOutput');
+        const strengthBar = document.getElementById('strengthBar');
+        const strengthText = document.getElementById('strengthText');
 
     // Define character sets for password generation
     const UPPERCASE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -127,6 +344,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const password = data.password || '';
             passwordOutput.value = password;
             calculateStrength(password, useUppercase, useLowercase, useNumbers, useSymbols);
+
+            // ===== NEW: Save to history ===== 
+            // Get the current strength level from the UI
+            const strengthLevel = strengthText.textContent.includes('Weak') ? 'weak' :
+                                 strengthText.textContent.includes('Medium') ? 'medium' : 'strong';
+            
+            // Add to history
+            addToHistory(password, length, strengthLevel);
+            // ===== END NEW =====
         })
         .catch(error => {
             console.error(error);
