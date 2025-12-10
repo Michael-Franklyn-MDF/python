@@ -571,7 +571,6 @@ input[type="range"]::-moz-range-thumb {
 
 /* ========== PASSWORD HISTORY STYLES - END ========== */
 
-
 /* Responsive design for smaller screens */
 @media (max-width: 600px) {
     .container {
@@ -585,5 +584,31 @@ input[type="range"]::-moz-range-thumb {
     #passwordOutput {
         font-size: 14px;
         letter-spacing: 1px;
+    }
+    
+    /* NEW: History responsive styles */
+    .history-item {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .history-password-text {
+        font-size: 13px;
+    }
+    
+    .history-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .history-copy-btn,
+    .history-delete-btn {
+        flex: 1;
+    }
+    
+    .theme-toggle {
+        width: 45px;
+        height: 45px;
+        font-size: 20px;
     }
 }
