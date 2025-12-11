@@ -194,6 +194,8 @@ def generate_passphrase():
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
+    # Default to 5001 to avoid conflict with Apple AirPlay on macOS
+    port = int(os.environ.get("PORT", 5001))
+    print(f"🚀 Starting Password Generator on http://localhost:{port}")
     app.run(host="0.0.0.0", port=port, debug=True)
 
