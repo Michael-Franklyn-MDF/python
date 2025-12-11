@@ -386,6 +386,148 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // ========== MODE SWITCHING FUNCTIONALITY - END ==========
     
+        // ========== PASSPHRASE GENERATION FUNCTIONALITY - START ==========
+    
+    /**
+     * Update the word count display when slider moves
+     */
+    wordCountSlider.addEventListener('input', function() {
+        wordCountValue.textContent = wordCountSlider.value;
+        updatePassphraseExample();
+    });
+    
+    /**
+     * Update example when any passphrase setting changes
+     */
+    document.querySelectorAll('input[name="separator"]').forEach(radio => {
+        radio.addEventListener('change', updatePassphraseExample);
+    });
+    
+    document.querySelectorAll('input[name="capitalize"]').forEach(radio => {
+        radio.addEventListener('change', updatePassphraseExample);
+    });
+    
+    passphraseNumbersCheck.addEventListener('change', updatePassphraseExample);
+    passphraseSymbolsCheck.addEventListener('change', updatePassphraseExample);
+    
+    /**
+     * Generate example passphrase preview
+     */
+    function updatePassphraseExample() {
+        const wordCount = parseInt(wordCountSlider.value);
+        const separator = document.querySelector('input[name="separator"]:checked').value;
+        const capitalize = document.querySelector('input[name="capitalize"]:checked').value;
+        const addNumbers = passphraseNumbersCheck.checked;
+        const addSymbols = passphraseSymbolsCheck.checked;
+        
+        // Generate example (client-side, just for preview)
+        const exampleWords = [];
+        for (let i = 0; i < wordCount; i++) {
+            const randomWord = WORD_LIST[Math.floor(Math.random() * WORD_LIST.length)];
+            exampleWords.push(randomWord);
+        }
+        
+        // Apply capitalization
+        let processedWords = exampleWords.map(word => {
+            if (capitalize === 'title') return word.charAt(0).toUpperCase() + word.slice(1);
+            if (capitalize === 'upper') return word.toUpperCase();
+            return word.toLowerCase();
+        });
+        
+        // Build example
+        let example = processedWords.join(separator);
+        if (addNumbers) example += '42';
+        if (addSymbols) example += '!';
+        
+        exampleText.textContent = example;
+    }
+    
+    /**
+     * Generate passphrase using backend API
+     */
+    function generatePassphrase() {
+        const wordCount = parseInt(wordCountSlider.value);
+        const separator = document.querySelector('input[name="separator"]:checked').value;
+        const capitalize = document.querySelector('input[name="capitalize"]:checked').value;
+        const addNumbers = passphraseNumbersCheck.checked;
+        const addSymbols = passphraseSymbolsCheck.checked;
+        
+        // Call backend API
+        generateBtn.disabled = true;
+        generateBtn.textContent = 'Generating...';
+        
+        fetch('/api/generate-passphrase', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                wordCount,
+                separator,
+                addNumbers,
+                addSymbols,
+                capitalize
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to generate passphrase');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const passphrase = data.passphrase || '';
+            passwordOutput.value = passphrase;
+            
+            // Calculate strength for passphrase
+            const strength = calculatePassphraseStrength(passphrase, wordCount, addNumbers, addSymbols);
+            updateStrengthUI(strength, `Strength: ${strength.charAt(0).toUpperCase() + strength.slice(1)} ${strength === 'weak' ? '🔴' : strength === 'medium' ? '🟡' : '🟢'}`);
+            
+            // Add to history
+            addToHistory(passphrase, passphrase.length, strength);
+        })
+        .catch(error => {
+            console.error(error);
+            passwordOutput.value = 'Error generating passphrase';
+            resetStrengthIndicator();
+        })
+        .finally(() => {
+            generateBtn.disabled = false;
+            generateBtn.textContent = 'Generate Passphrase';
+        });
+    }
+    
+    /**
+     * Calculate strength for passphrases
+     * @param {string} passphrase - The passphrase to evaluate
+     * @param {number} wordCount - Number of words
+     * @param {boolean} hasNumbers - Has numbers
+     * @param {boolean} hasSymbols - Has symbols
+     * @returns {string} 'weak', 'medium', or 'strong'
+     */
+    function calculatePassphraseStrength(passphrase, wordCount, hasNumbers, hasSymbols) {
+        let strength = 0;
+        
+        // Word count is most important for passphrases
+        if (wordCount >= 5) strength += 3;
+        else if (wordCount >= 4) strength += 2;
+        else strength += 1;
+        
+        // Length bonus
+        if (passphrase.length >= 30) strength += 2;
+        else if (passphrase.length >= 20) strength += 1;
+        
+        // Additional character types
+        if (hasNumbers) strength += 1;
+        if (hasSymbols) strength += 1;
+        
+        // Determine overall strength
+        if (strength <= 3) return 'weak';
+        if (strength <= 5) return 'medium';
+        return 'strong';
+    }
+    
+    // ========== PASSPHRASE GENERATION FUNCTIONALITY - END ==========
+
+    
     // Define character sets for password generation
     const UPPERCASE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const LOWERCASE = 'abcdefghijklmnopqrstuvwxyz';
