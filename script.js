@@ -527,7 +527,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // ========== PASSPHRASE GENERATION FUNCTIONALITY - END ==========
 
-    
+
     // Define character sets for password generation
     const UPPERCASE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const LOWERCASE = 'abcdefghijklmnopqrstuvwxyz';
@@ -554,10 +554,16 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     /**
-     * Main function to generate a password based on user settings
+     * Main function to generate password or passphrase based on current mode
      */
     function generatePassword() {
-        // Get current settings from the form
+        // Check which mode we're in
+        if (currentMode === 'passphrase') {
+            generatePassphrase();
+            return;
+        }
+        
+        // Original random password generation
         const length = parseInt(lengthSlider.value);
         const useUppercase = uppercaseCheckbox.checked;
         const useLowercase = lowercaseCheckbox.checked;
@@ -599,14 +605,12 @@ document.addEventListener('DOMContentLoaded', function() {
             passwordOutput.value = password;
             calculateStrength(password, useUppercase, useLowercase, useNumbers, useSymbols);
 
-            // ===== NEW: Save to history ===== 
             // Get the current strength level from the UI
             const strengthLevel = strengthText.textContent.includes('Weak') ? 'weak' :
                                  strengthText.textContent.includes('Medium') ? 'medium' : 'strong';
             
             // Add to history
             addToHistory(password, length, strengthLevel);
-            // ===== END NEW =====
         })
         .catch(error => {
             console.error(error);
