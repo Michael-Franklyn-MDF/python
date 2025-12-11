@@ -1,5 +1,25 @@
 // Wait for the HTML page to fully load before running our code
 document.addEventListener('DOMContentLoaded', function() {
+    // Debug logging helper function
+    function debugLog(location, message, data, hypothesisId) {
+        const logEntry = {
+            location: location,
+            message: message,
+            data: data || {},
+            timestamp: Date.now(),
+            sessionId: 'debug-session',
+            runId: 'run1',
+            hypothesisId: hypothesisId || 'unknown'
+        };
+        // Always log to console for visibility
+        console.log('[DEBUG]', JSON.stringify(logEntry));
+        // Try HTTP endpoint
+        fetch('http://127.0.0.1:7242/ingest/7938646a-f0db-4373-af6f-f691f34f9451', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(logEntry)
+        }).catch(() => {});
+    }
         // ========== DARK MODE FUNCTIONALITY - START ==========
         
         const themeToggle = document.getElementById('themeToggle');
@@ -8,6 +28,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Load saved theme from localStorage on page load
         function loadTheme() {
+            // #region agent log
+            debugLog('script.js:loadTheme', 'loadTheme called', {timestamp: Date.now()}, 'A');
+            // #endregion
             const savedTheme = localStorage.getItem('theme');
             
             if (savedTheme === 'dark') {
@@ -17,6 +40,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 body.classList.remove('dark-mode');
                 themeIcon.textContent = '🌙';
             }
+            // #region agent log
+            debugLog('script.js:loadTheme', 'loadTheme completed', {savedTheme: savedTheme}, 'A');
+            // #endregion
         }
         
         // Toggle between light and dark mode
@@ -40,11 +66,6 @@ document.addEventListener('DOMContentLoaded', function() {
         loadTheme();
         
         // ========== DARK MODE FUNCTIONALITY - END ==========
-
-        // Load theme when page first loads
-    loadTheme();
-    
-    // ========== DARK MODE FUNCTIONALITY - END ==========
     
     // ========== PASSWORD HISTORY FUNCTIONALITY - START ==========
     
@@ -348,6 +369,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Track current mode
     let currentMode = 'random'; // 'random' or 'passphrase'
+    
+    // Track if a generation is in progress to prevent concurrent requests
+    let isGenerating = false;
     // ========== NEW: PASSPHRASE ELEMENT REFERENCES - END ==========
 
     // ========== MODE SWITCHING FUNCTIONALITY - START ==========
@@ -357,6 +381,9 @@ document.addEventListener('DOMContentLoaded', function() {
      * @param {string} mode - 'random' or 'passphrase'
      */
     function switchMode(mode) {
+        // #region agent log
+        debugLog('script.js:switchMode', 'switchMode called', {oldMode: currentMode, newMode: mode, buttonText: generateBtn.textContent, buttonDisabled: generateBtn.disabled}, 'D');
+        // #endregion
         currentMode = mode;
         
         // Update tab buttons
@@ -374,6 +401,13 @@ document.addEventListener('DOMContentLoaded', function() {
             generateBtn.textContent = 'Generate Passphrase';
             updatePassphraseExample();
         }
+        
+        // Ensure button is enabled when switching modes (in case it was stuck disabled)
+        generateBtn.disabled = false;
+        
+        // #region agent log
+        debugLog('script.js:switchMode', 'switchMode completed', {currentMode: currentMode, buttonText: generateBtn.textContent, buttonDisabled: generateBtn.disabled}, 'D');
+        // #endregion
         
         // Clear current password and reset strength
         passwordOutput.value = '';
@@ -446,6 +480,17 @@ document.addEventListener('DOMContentLoaded', function() {
      * Generate passphrase using backend API
      */
     function generatePassphrase() {
+        // #region agent log
+        debugLog('script.js:generatePassphrase', 'generatePassphrase entry', {currentMode: currentMode, isGenerating: isGenerating}, 'B');
+        // #endregion
+        
+        // Prevent concurrent requests
+        if (isGenerating) {
+            debugLog('script.js:generatePassphrase', 'Already generating, ignoring request', {}, 'B');
+            return;
+        }
+        
+        isGenerating = true;
         const wordCount = parseInt(wordCountSlider.value);
         const separator = document.querySelector('input[name="separator"]:checked').value;
         const capitalize = document.querySelector('input[name="capitalize"]:checked').value;
@@ -453,8 +498,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const addSymbols = passphraseSymbolsCheck.checked;
         
         // Call backend API
+        // #region agent log
+        debugLog('script.js:generatePassphrase', 'About to disable button', {currentMode: currentMode, buttonTextBefore: generateBtn.textContent, buttonDisabledBefore: generateBtn.disabled}, 'B');
+        // #endregion
         generateBtn.disabled = true;
         generateBtn.textContent = 'Generating...';
+        // #region agent log
+        debugLog('script.js:generatePassphrase', 'Button disabled', {buttonText: generateBtn.textContent, currentMode: currentMode, buttonDisabled: generateBtn.disabled}, 'B');
+        // #endregion
         
         fetch('/api/generate-passphrase', {
             method: 'POST',
@@ -485,13 +536,24 @@ document.addEventListener('DOMContentLoaded', function() {
             addToHistory(passphrase, passphrase.length, strength);
         })
         .catch(error => {
+            // #region agent log
+            debugLog('script.js:generatePassphrase', 'Error occurred', {error: error.message, currentMode: currentMode}, 'E');
+            // #endregion
             console.error(error);
             passwordOutput.value = 'Error generating passphrase';
             resetStrengthIndicator();
         })
         .finally(() => {
+            // #region agent log
+            debugLog('script.js:generatePassphrase', 'finally block', {currentMode: currentMode}, 'B');
+            // #endregion
+            isGenerating = false;
             generateBtn.disabled = false;
-            generateBtn.textContent = 'Generate Passphrase';
+            // Restore button text based on current mode (user may have switched modes during generation)
+            generateBtn.textContent = currentMode === 'passphrase' ? 'Generate Passphrase' : 'Generate Password';
+            // #region agent log
+            debugLog('script.js:generatePassphrase', 'Button restored', {currentMode: currentMode, buttonText: generateBtn.textContent, buttonDisabled: generateBtn.disabled}, 'B');
+            // #endregion
         });
     }
     
@@ -557,12 +619,23 @@ document.addEventListener('DOMContentLoaded', function() {
      * Main function to generate password or passphrase based on current mode
      */
     function generatePassword() {
+        // #region agent log
+        debugLog('script.js:generatePassword', 'generatePassword called', {currentMode: currentMode, isGenerating: isGenerating}, 'C');
+        // #endregion
+        
+        // Prevent concurrent requests
+        if (isGenerating) {
+            debugLog('script.js:generatePassword', 'Already generating, ignoring request', {}, 'C');
+            return;
+        }
+        
         // Check which mode we're in
         if (currentMode === 'passphrase') {
             generatePassphrase();
             return;
         }
         
+        isGenerating = true;
         // Original random password generation
         const length = parseInt(lengthSlider.value);
         const useUppercase = uppercaseCheckbox.checked;
@@ -573,14 +646,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Check if at least one option is selected
         if (!useUppercase && !useLowercase && !useNumbers && !useSymbols) {
+            // #region agent log
+            debugLog('script.js:generatePassword', 'Early return - no character types selected', {currentMode: currentMode, buttonText: generateBtn.textContent, buttonDisabled: generateBtn.disabled}, 'F');
+            // #endregion
+            isGenerating = false;
             passwordOutput.value = 'Please select at least one option!';
             resetStrengthIndicator();
             return;
         }
 
         // Call backend API to generate password
+        // #region agent log
+        debugLog('script.js:generatePassword', 'About to disable button', {currentMode: currentMode, buttonTextBefore: generateBtn.textContent, buttonDisabledBefore: generateBtn.disabled}, 'B');
+        // #endregion
         generateBtn.disabled = true;
         generateBtn.textContent = 'Generating...';
+        // #region agent log
+        debugLog('script.js:generatePassword', 'Button disabled', {currentMode: currentMode, buttonTextAfter: generateBtn.textContent, buttonDisabledAfter: generateBtn.disabled}, 'B');
+        // #endregion
 
         fetch('/api/generate-password', {
             method: 'POST',
@@ -613,13 +696,24 @@ document.addEventListener('DOMContentLoaded', function() {
             addToHistory(password, length, strengthLevel);
         })
         .catch(error => {
+            // #region agent log
+            debugLog('script.js:generatePassword', 'Error occurred', {error: error.message, currentMode: currentMode}, 'E');
+            // #endregion
             console.error(error);
             passwordOutput.value = 'Error generating password';
             resetStrengthIndicator();
         })
         .finally(() => {
+            // #region agent log
+            debugLog('script.js:generatePassword', 'finally block', {currentMode: currentMode}, 'B');
+            // #endregion
+            isGenerating = false;
             generateBtn.disabled = false;
-            generateBtn.textContent = 'Generate Password';
+            // Restore button text based on current mode (user may have switched modes during generation)
+            generateBtn.textContent = currentMode === 'passphrase' ? 'Generate Passphrase' : 'Generate Password';
+            // #region agent log
+            debugLog('script.js:generatePassword', 'Button restored', {currentMode: currentMode, buttonText: generateBtn.textContent, buttonDisabled: generateBtn.disabled}, 'B');
+            // #endregion
         });
     }
 
@@ -723,7 +817,27 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Generate an initial password when page loads
-    generatePassword();
+    // #region agent log
+    debugLog('script.js:pageLoad', 'Page load - initializing', {currentMode: currentMode, buttonText: generateBtn.textContent, buttonDisabled: generateBtn.disabled}, 'C');
+    // #endregion
+    // Ensure button is in correct initial state
+    generateBtn.disabled = false;
+    generateBtn.textContent = currentMode === 'passphrase' ? 'Generate Passphrase' : 'Generate Password';
+    
+    // Try to generate initial password, but don't fail if server isn't ready
+    try {
+        // Only generate if not already generating (safety check)
+        if (!isGenerating) {
+            debugLog('script.js:pageLoad', 'Calling generatePassword on page load', {}, 'C');
+            generatePassword();
+        }
+    } catch (error) {
+        debugLog('script.js:pageLoad', 'Error on initial generatePassword', {error: error.message}, 'C');
+        console.error('Initial password generation failed:', error);
+        // Ensure button is still in correct state even if generation fails
+        generateBtn.disabled = false;
+        generateBtn.textContent = currentMode === 'passphrase' ? 'Generate Passphrase' : 'Generate Password';
+    }
     
     // Initialize passphrase example
     updatePassphraseExample();
