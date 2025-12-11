@@ -349,6 +349,42 @@ document.addEventListener('DOMContentLoaded', function() {
     // Track current mode
     let currentMode = 'random'; // 'random' or 'passphrase'
     // ========== NEW: PASSPHRASE ELEMENT REFERENCES - END ==========
+
+    // ========== MODE SWITCHING FUNCTIONALITY - START ==========
+    
+    /**
+     * Switch between Random and Passphrase modes
+     * @param {string} mode - 'random' or 'passphrase'
+     */
+    function switchMode(mode) {
+        currentMode = mode;
+        
+        // Update tab buttons
+        if (mode === 'random') {
+            randomTab.classList.add('active');
+            passphraseTab.classList.remove('active');
+            randomSettings.style.display = 'block';
+            passphraseSettings.style.display = 'none';
+            generateBtn.textContent = 'Generate Password';
+        } else {
+            passphraseTab.classList.add('active');
+            randomTab.classList.remove('active');
+            passphraseSettings.style.display = 'block';
+            randomSettings.style.display = 'none';
+            generateBtn.textContent = 'Generate Passphrase';
+            updatePassphraseExample();
+        }
+        
+        // Clear current password and reset strength
+        passwordOutput.value = '';
+        resetStrengthIndicator();
+    }
+    
+    // Add click events to tabs
+    randomTab.addEventListener('click', () => switchMode('random'));
+    passphraseTab.addEventListener('click', () => switchMode('passphrase'));
+    
+    // ========== MODE SWITCHING FUNCTIONALITY - END ==========
     
     // Define character sets for password generation
     const UPPERCASE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
