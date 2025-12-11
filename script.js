@@ -724,4 +724,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Generate an initial password when page loads
     generatePassword();
+    
+    // Initialize passphrase example
+    updatePassphraseExample();
 });
