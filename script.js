@@ -322,20 +322,34 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get references to all the HTML elements we need to work with
     const lengthSlider = document.getElementById('lengthSlider');
     // ... rest of your existing code continues here
-    
-        // Get references to HTML elements
-        const lengthValue = document.getElementById('lengthValue');
-        const uppercaseCheckbox = document.getElementById('uppercaseCheck');
-        const lowercaseCheckbox = document.getElementById('lowercaseCheck');
-        const numbersCheckbox = document.getElementById('numbersCheck');
-        const symbolsCheckbox = document.getElementById('symbolsCheck');
-        const excludeAmbiguousCheckbox = document.getElementById('excludeAmbiguous');
-        const generateBtn = document.getElementById('generateBtn');
-        const copyBtn = document.getElementById('copyBtn');
-        const passwordOutput = document.getElementById('passwordOutput');
-        const strengthBar = document.getElementById('strengthBar');
-        const strengthText = document.getElementById('strengthText');
+    // Get references to HTML elements
+    const lengthValue = document.getElementById('lengthValue');
+    const uppercaseCheckbox = document.getElementById('uppercaseCheck');
+    const lowercaseCheckbox = document.getElementById('lowercaseCheck');
+    const numbersCheckbox = document.getElementById('numbersCheck');
+    const symbolsCheckbox = document.getElementById('symbolsCheck');
+    const excludeAmbiguousCheckbox = document.getElementById('excludeAmbiguous');
+    const generateBtn = document.getElementById('generateBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const passwordOutput = document.getElementById('passwordOutput');
+    const strengthBar = document.getElementById('strengthBar');
+    const strengthText = document.getElementById('strengthText');
 
+    // ========== NEW: PASSPHRASE ELEMENT REFERENCES - START ==========
+    const randomTab = document.getElementById('randomTab');
+    const passphraseTab = document.getElementById('passphraseTab');
+    const randomSettings = document.getElementById('randomSettings');
+    const passphraseSettings = document.getElementById('passphraseSettings');
+    const wordCountSlider = document.getElementById('wordCountSlider');
+    const wordCountValue = document.getElementById('wordCountValue');
+    const passphraseNumbersCheck = document.getElementById('passphraseNumbers');
+    const passphraseSymbolsCheck = document.getElementById('passphraseSymbols');
+    const exampleText = document.getElementById('exampleText');
+    
+    // Track current mode
+    let currentMode = 'random'; // 'random' or 'passphrase'
+    // ========== NEW: PASSPHRASE ELEMENT REFERENCES - END ==========
+    
     // Define character sets for password generation
     const UPPERCASE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const LOWERCASE = 'abcdefghijklmnopqrstuvwxyz';
