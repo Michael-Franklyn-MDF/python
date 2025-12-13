@@ -1,0 +1,19 @@
+# Flask Web Framework
+# Core framework for building the web application
+Flask>=3.0.0
+
+# Flask-Limiter for Rate Limiting
+# Protects API endpoints from abuse by limiting requests per IP
+Flask-Limiter>=3.5.0
+
+# Testing Framework
+# pytest: Main testing framework
+# pytest-flask: Flask-specific testing utilities
+# pytest-cov: Code coverage reporting
+pytest>=7.4.0
+pytest-flask>=1.3.0
+pytest-cov>=4.1.0
+
+# Optional: CLI password copying (for project.py)
+# pyperclip: Copy passwords to system clipboard
+pyperclip>=1.8.2
