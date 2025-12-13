@@ -1,85 +1,6 @@
-import random
-import string
 import pyperclip  # For copying to clipboard (install: pip install pyperclip)
-
-def generate_password(length, use_uppercase, use_lowercase, use_numbers, use_symbols, exclude_ambiguous):
-    """
-    Generates a password based on the given criteria.
-    
-    Parameters:
-    - length: How many characters the password should be
-    - use_uppercase: Include uppercase letters (A-Z)
-    - use_lowercase: Include lowercase letters (a-z)
-    - use_numbers: Include numbers (0-9)
-    - use_symbols: Include symbols (!@#$%)
-    - exclude_ambiguous: Remove confusing characters (0, O, l, 1, I)
-    
-    Returns: The generated password as a string
-    """
-    
-    # Start with an empty string to build our character pool
-    characters = ""
-    
-    # Add character types based on user preferences
-    if use_uppercase:
-        characters += string.ascii_uppercase  # Adds A-Z
-    if use_lowercase:
-        characters += string.ascii_lowercase  # Adds a-z
-    if use_numbers:
-        characters += string.digits  # Adds 0-9
-    if use_symbols:
-        characters += string.punctuation  # Adds !@#$%^&*() etc.
-    
-    # Remove ambiguous characters if requested
-    if exclude_ambiguous:
-        ambiguous = "0Ol1I"
-        for char in ambiguous:
-            characters = characters.replace(char, "")
-    
-    # Make sure we have at least some characters to work with
-    if not characters:
-        return None
-    
-    # Generate the password by randomly selecting characters
-    password = ''.join(random.choice(characters) for _ in range(length))
-    
-    return password
-
-def calculate_strength(password):
-    """
-    Evaluates password strength based on multiple criteria.
-    Returns a tuple: (strength_score, strength_text, color_code)
-    """
-    
-    strength = 0
-    
-    # Award points for length
-    if len(password) >= 16:
-        strength += 3
-    elif len(password) >= 12:
-        strength += 2
-    elif len(password) >= 8:
-        strength += 1
-    
-    # Award points for character variety
-    if any(c.isupper() for c in password):
-        strength += 1
-    if any(c.islower() for c in password):
-        strength += 1
-    if any(c.isdigit() for c in password):
-        strength += 1
-    if any(c in string.punctuation for c in password):
-        strength += 2
-    
-    # Determine overall strength level
-    if strength <= 3:
-        return (strength, "Weak 🔴", "\033[91m")  # Red
-    elif strength <= 5:
-        return (strength, "Medium 🟡", "\033[93m")  # Yellow
-    elif strength <= 7:
-        return (strength, "Strong 🟢", "\033[92m")  # Green
-    else:
-        return (strength, "Very Strong 🟢", "\033[92m")  # Green
+import logic
+import sys
 
 def get_yes_no(prompt, default=True):
     """
@@ -151,37 +72,36 @@ def main():
         use_symbols = get_yes_no("Include symbols (!@#$%)?", True)
         exclude_ambiguous = get_yes_no("Exclude ambiguous characters (0, O, l, 1, I)?", False)
         
-        # Generate the password
-        password = generate_password(
-            length, 
-            use_uppercase, 
-            use_lowercase, 
-            use_numbers, 
-            use_symbols, 
-            exclude_ambiguous
-        )
-        
-        # Check if password generation was successful
-        if password is None:
-            print("\n❌ Error: You must select at least one character type!\n")
-            continue
-        
-        # Calculate strength
-        score, strength_text, color_code = calculate_strength(password)
-        reset_color = "\033[0m"  # Reset color back to normal
-        
-        # Display the result
-        print("\n" + "-"*50)
-        print(f"Generated Password: {color_code}{password}{reset_color}")
-        print(f"Strength: {color_code}{strength_text}{reset_color} (Score: {score}/8)")
-        print("-"*50 + "\n")
-        
-        # Try to copy to clipboard
         try:
-            pyperclip.copy(password)
-            print("✅ Password copied to clipboard!\n")
-        except:
-            print("⚠️  Could not copy to clipboard. Install pyperclip: pip install pyperclip\n")
+            # Generate the password
+            password = logic.generate_password(
+                length=length, 
+                use_uppercase=use_uppercase, 
+                use_lowercase=use_lowercase, 
+                use_numbers=use_numbers, 
+                use_symbols=use_symbols, 
+                exclude_ambiguous=exclude_ambiguous
+            )
+            
+            # Calculate strength
+            score, strength_text, color_code = logic.calculate_strength(password)
+            reset_color = "\033[0m"  # Reset color back to normal
+            
+            # Display the result
+            print("\n" + "-"*50)
+            print(f"Generated Password: {color_code}{password}{reset_color}")
+            print(f"Strength: {color_code}{strength_text}{reset_color} (Score: {score}/8)")
+            print("-"*50 + "\n")
+            
+            # Try to copy to clipboard
+            try:
+                pyperclip.copy(password)
+                print("✅ Password copied to clipboard!\n")
+            except:
+                print("⚠️  Could not copy to clipboard. Install pyperclip: pip install pyperclip\n")
+                
+        except logic.GenerationError as e:
+            print(f"\n❌ Error: {str(e)}\n")
         
         # Ask if user wants to generate another password
         if not get_yes_no("\nGenerate another password?", True):
